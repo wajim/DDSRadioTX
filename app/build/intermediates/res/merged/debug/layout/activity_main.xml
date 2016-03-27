@@ -7,7 +7,7 @@
     <LinearLayout
         android:id="@+id/wrapper0"
         android:layout_width="fill_parent"
-        android:layout_height="140dp"
+        android:layout_height="70dp"
         android:background="@drawable/customborder"
         android:weightSum="1.0">
 
@@ -18,16 +18,58 @@
             android:gravity="center"
             android:text="12.345.678  Hz"
             android:textColor="#FFFFFF"
-            android:textSize="40dp"
+            android:layout_weight="0.15"
             android:layout_gravity="center_vertical" />
 
+        <TextView
+            android:id="@+id/freq_text"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Hz"
+            android:textColor="#FFFFFF"
+            android:textSize="20dp"
+            android:layout_weight="0.85"
+            android:layout_gravity="center_vertical" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/wrappera"
+        android:layout_width="fill_parent"
+        android:layout_height="70dp"
+        android:background="@drawable/customborder"
+        android:layout_below="@+id/wrapper0"
+        android:weightSum="1.0">
+
+    <TextView
+        android:id="@+id/freq_schrit"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Schrittweite 10000000"
+        android:textColor="#FFFFFF"
+        android:layout_weight="0.15"
+        />
+
+    <TextView
+        android:id="@+id/freq_lbl"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Hz"
+        android:textColor="#FFFFFF"
+        android:textSize="20dp"
+        android:layout_weight="0.85"
+         />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/wrapper112"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/wrapper0"
+        android:layout_below="@+id/wrappera"
+        android:layout_marginTop="10dp"
         android:weightSum="1.0">
 
         <TextView
@@ -68,9 +110,11 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/wrapper113"
+        android:layout_marginTop="10dp"
         android:weightSum="1.0">
 
         <TextView
+            android:id="@+id/textview_schr"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
