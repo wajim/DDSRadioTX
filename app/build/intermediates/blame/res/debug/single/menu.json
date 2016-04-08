@@ -1,9 +1,5 @@
 [
     {
-        "merged": "C:\\Users\\Jim\\AndroidStudioProjects\\DDS-Radio-TX\\app\\build\\intermediates\\res\\merged\\debug\\menu\\main.xml",
-        "source": "C:\\Users\\Jim\\AndroidStudioProjects\\DDS-Radio-TX\\app\\src\\main\\res\\menu\\main.xml"
-    },
-    {
         "merged": "C:\\Users\\Jim\\AndroidStudioProjects\\DDSRadioTX\\app\\build\\intermediates\\res\\merged\\debug\\menu\\main.xml",
         "source": "C:\\Users\\Jim\\AndroidStudioProjects\\DDSRadioTX\\app\\src\\main\\res\\menu\\main.xml"
     }
