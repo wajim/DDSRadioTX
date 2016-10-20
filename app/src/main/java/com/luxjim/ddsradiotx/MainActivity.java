@@ -21,47 +21,47 @@ package com.luxjim.ddsradiotx;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Paint;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
-import android.hardware.usb.UsbConstants;
-import android.hardware.usb.UsbInterface;
-import android.hardware.usb.UsbRequest;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbEndpoint;
 import android.hardware.usb.UsbManager;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import com.felhr.usbserial.CDCSerialDevice;
 import com.felhr.usbserial.UsbSerialDevice;
 import com.felhr.usbserial.UsbSerialInterface;
-import com.felhr.usbserial.CDCSerialDevice;
-
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 
 public class MainActivity extends Activity implements View.OnClickListener {
 
-    private static final String TAG = "Android USB Serial";
+    //private static final String TAG = "Android USB Serial";
     private int bufferSize = 8;
+    private static final String TAG = "LW BUTTON CRASH.........";
     UsbDevice device;
     UsbEndpoint epIN = null;
     UsbEndpoint epOUT = null;
     UsbDeviceConnection connection;
     UsbSerialDevice serialPort = null;
-    DecimalFormat formatter;
+    DecimalFormat formatter = null;
     private long frequency = 1000000;
     private long step = 100;
     private boolean store = false;
     private TextView a,b,c,y;
     private Button d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x;
+    public static final String MyPREFERENCES = "MyPrefs" ;
+    public static final String Name = null;
+    public static final String FRQ = null;
+
+    SharedPreferences sharedpreferences;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,57 +70,303 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
         Typeface SCRIPTBL = Typeface.createFromAsset(getAssets(), "androidnation.ttf");
         Typeface FORTE = Typeface.createFromAsset(getAssets(), "Cornerstone.ttf");
-        DecimalFormat formatter = new DecimalFormat("#,###,###");
-        //Initialize widgets...
+        final DecimalFormat formatter = new DecimalFormat("###,###,###,###,###.##");
+        formatter.setDecimalSeparatorAlwaysShown(true);
+        formatter.setMinimumFractionDigits(2);
+
         a = (TextView) findViewById(R.id.freq_panel);
-        a.setTextSize(28);
+        a.setTextSize(25);
         a.setText("12.345.578");
         a.setTypeface(SCRIPTBL);
         b = (TextView) findViewById(R.id.textview_abst);
         c = (TextView) findViewById(R.id.textview_schr);
         y = (TextView) findViewById(R.id.freq_schrit);
         y.setTextSize(20);
-        y.setText("Schrittweite 10000000");
+        y.setText("Schrittweite 10 000 000");
 
         d = (Button) findViewById(R.id.buttonplus);
+        d.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                long frequency = Long.parseLong(null);
+                String Str = a.toString();
+                frequency = Long.parseLong(Str);
+                d.setText((int) (frequency + step));
+            }
+        });
         e = (Button) findViewById(R.id.buttonmoins);
+        e.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                long frequency = Long.parseLong(null);
+                String Str = a.toString();
+                frequency = Long.parseLong(Str) - step;
+                a.setText((int) frequency);
+                //e.setText((int) (frequency - step));
+            }
+        });
         f = (Button) findViewById(R.id.buttonpgauche);
         f.setText("<");
+        f.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                long frequency = Long.parseLong(null);
+                String Str = y.toString();
+                frequency = Long.parseLong(Str);
+                f.setText((int) (frequency * 10));
+            }
+        });
+
         g = (Button) findViewById(R.id.buttondroit);
+        g.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                long frequency = Long.parseLong(null);
+                String Str = y.toString();
+                frequency = Long.parseLong(Str);
+                g.setText((int) (frequency / 10));
+            }
+        });
         h = (Button) findViewById(R.id.button1);
         h.setOnClickListener(new View.OnClickListener() {
-                                 @Override
-                                 public void onClick(View v) {
-                                     byte[] buffer = new byte[bufferSize];
-                                     if (buffer != null) {
+            @Override
+            public void onClick(View v) {
+                frequency = 148000;
 
-                                         buffer[0] = 0x01;
-                                         buffer[1] = 1;
-                                         buffer[2] = 2;
-                                         buffer[3] = 3;
-                                         buffer[4] = 4;
-                                         buffer[5] = (byte) 0xff;
-                                         connection.controlTransfer(0x21, 0x9, 0x200, 0, buffer, buffer.length, 0);
-                                     }
-                                 }
-                             });
+
+                try {
+                    sendNewFreq(frequency);
+                    a.setText(formatter.format(frequency));
+                    y.setText("Schrittweite " + formatter.format(step));
+// ...
+                } catch (Exception exception) {
+                    Log.e(TAG, "Received an exception", exception);
+                }
+            }
+        });
 
         i = (Button) findViewById(R.id.button2);
+        i.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                frequency = 3900000;
+                sendNewFreq(frequency);
+                a.setText(formatter.format(frequency));
+                y.setText("Schrittweite " + formatter.format(step));
+            }
+        });
+
         j = (Button) findViewById(R.id.button3);
-        k = (Button) findViewById(R.id.buttonAdd);
+        j.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                frequency = 9400000;
+                sendNewFreq(frequency);
+                a.setText(formatter.format(frequency));
+                y.setText("Schrittweite " + formatter.format(step));
+            }
+        });
+
+        k = (Button) findViewById(R.id.buttonAdd);  //STO
+        k.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                store = true;
+            }
+        });
+
         l = (Button) findViewById(R.id.button4);
+        l.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                frequency = 520000;
+                sendNewFreq(frequency);
+                a.setText(formatter.format(frequency));
+                y.setText("Schrittweite " + formatter.format(step));
+            }
+        });
+
         m = (Button) findViewById(R.id.button5);
+        m.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                frequency = 4750000;
+                sendNewFreq(frequency);
+                a.setText(formatter.format(frequency));
+                y.setText("Schrittweite " + formatter.format(step));
+            }
+        });
+
         n = (Button) findViewById(R.id.button6);
-        o = (Button) findViewById(R.id.buttonSubtract);
+        n.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                frequency = 11600000;
+                sendNewFreq(frequency);
+                a.setText(formatter.format(frequency));
+                y.setText("Schrittweite " + formatter.format(step));
+            }
+        });
+
+        o = (Button) findViewById(R.id.buttonSubtract);  //M1
+        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+
+        o.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (store = true)  {
+                String N = o.getText().toString();
+                String F = a.getText().toString();
+
+                    SharedPreferences.Editor editor = sharedpreferences.edit();
+                    editor.putString(Name, N);
+                    editor.putString(FRQ, F);
+                    editor.commit();
+                    a.setText(F);
+                }
+                else
+                {
+                   // sharedpreferences = getApplicationContext().getSharedPreferences(MyPREFERENCES, 0);
+                    //String Name = sharedpreferences.getString(Name, Name);
+                    //String FRQ = sharedpreferences.getString(FRQ, FRQ);
+                    sendNewFreq(frequency);
+                    a.setText(formatter.format(frequency));
+                    y.setText("Schrittweite " + formatter.format(step));
+                }
+            }
+        });
+
         p = (Button) findViewById(R.id.button7);
+        p.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                frequency = 2300000;
+                sendNewFreq(frequency);
+                a.setText(formatter.format(frequency));
+                y.setText("Schrittweite " + formatter.format(step));
+            }
+        });
+
         q = (Button) findViewById(R.id.button8);
+        q.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                frequency = 5900000;
+                sendNewFreq(frequency);
+                a.setText(formatter.format(frequency));
+                y.setText("Schrittweite " + formatter.format(step));
+            }
+        });
+
         r = (Button) findViewById(R.id.button9);
-        s = (Button) findViewById(R.id.buttonMultiply);
+        r.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                frequency = 13570000;
+                sendNewFreq(frequency);
+                a.setText(formatter.format(frequency));
+                y.setText("Schrittweite " + formatter.format(step));
+            }
+        });
+
+        s = (Button) findViewById(R.id.buttonMultiply);  //M2
+        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+
+        s.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (store = true)  {
+                    String N = s.getText().toString();
+                    String F = String.valueOf(frequency);
+
+                    SharedPreferences.Editor editor = sharedpreferences.edit();
+                    editor.putString(Name, N);
+                    editor.putString(FRQ, F);
+                    editor.commit();
+                }
+                else
+                {
+                    sendNewFreq(frequency);
+                    a.setText(formatter.format(frequency));
+                    y.setText("Schrittweite " + formatter.format(step));
+                }
+            }
+        });
+
         t = (Button) findViewById(R.id.buttonNegative);
+
+        t.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                frequency = 3200000;
+                sendNewFreq(frequency);
+                a.setText(formatter.format(frequency));
+                y.setText("Schrittweite " + formatter.format(step));
+            }
+        });
+
         u = (Button) findViewById(R.id.button0);
+        u.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                frequency = 7200000;
+                sendNewFreq(frequency);
+                a.setText(formatter.format(frequency));
+                y.setText("Schrittweite " + formatter.format(step));
+            }
+        });
+
         v = (Button) findViewById(R.id.buttonDot);
-        w = (Button) findViewById(R.id.buttonDivide);
-        x = (Button) findViewById(R.id.button111);
+        v.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                frequency = 15100000;
+                sendNewFreq(frequency);
+                a.setText(formatter.format(frequency));
+                y.setText("Schrittweite " + formatter.format(step));
+            }
+        });
+
+        w = (Button) findViewById(R.id.buttonDivide);  //M3
+        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+
+        w.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (store = true)  {
+                    String N = w.getText().toString();
+                    String F = String.valueOf(frequency);
+
+                    SharedPreferences.Editor editor = sharedpreferences.edit();
+                    editor.putString(Name, N);
+                    editor.putString(FRQ, F);
+                    editor.commit();
+                }
+                else
+                {
+                    sendNewFreq(frequency);
+                    a.setText(formatter.format(frequency));
+                    y.setText("Schrittweite " + formatter.format(step));
+                }
+            }
+        });
+
+        x = (Button) findViewById(R.id.button111);  //Current frequency
+        x.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                frequency = Long.parseLong(a.getText().toString());
+                try {
+                    sendNewFreqToDDSEEPROM(frequency);
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+                a.setText(formatter.format(frequency));
+                y.setText("Schrittweite " + formatter.format(step));
+
+            }
+        });
 
         // This snippet will open the first usb device connected, excluding usb root hubs
         UsbManager usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
@@ -150,7 +396,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     Toast.LENGTH_LONG).show();
                 }
 
-                if(!keep)
+                if (!keep)
                     break;
             }
         }
@@ -162,8 +408,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
         super.onPause();
 
     }
+
     @Override
     public void onResume() {
+
         super.onResume();
     }
 
@@ -173,11 +421,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
         @Override
         public void onReceivedData(byte[] arg0)
         {
+
             // Code here
         }
     };
 
-    //...
     public void getSerialPort() {
         //CDCSerialDevice serialPort = CDCSerialDevice.createUsbSerialDevice(device, connection);
         CDCSerialDevice serialPort = new CDCSerialDevice(device, connection);
@@ -195,44 +443,33 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 serialPort.read(mCallback);
             }else
             {
-                   Toast.makeText(this, "Serial port could not be opened",
+                   Toast.makeText(this, "No Device Connected To Serial Port...",
                  Toast.LENGTH_SHORT).show();
             }
-        }else
-        {
-            // No driver for given device, even generic CDC driver could not be loaded
         }
         return;
     }
 
-    private boolean sendNewFreqToDDSEEPROM(long freq) throws Exception {
-        byte[] buffer = new byte[bufferSize];
-        if (buffer != null)
+    private boolean sendControlTransfer(byte[] dataToSend)  {
+        synchronized (this)
         {
-            buffer[0] = 0x03;
-            buffer[1] = (byte)((frequency & 0xff000000) >> 24);
-            buffer[2] = (byte)((frequency & 0x00ff0000) >> 16);
-            buffer[3] = (byte)((frequency & 0x0000ff00) >> 8);
-            buffer[4] = (byte)((frequency & 0x000000ff));
-            buffer[5] = (byte) 0xff;
-            connection.controlTransfer(0x21, 0x9, 0x200, 0, buffer, buffer.length, 0);
-            if ((buffer[0] == 0x02) && (buffer[5] == 0x64))
-                return true;
-            else
-                return false;
-        }
+            byte[] buffer = new byte[bufferSize];
+            if (connection != null) {
 
-        return false;
-    }
+                if (buffer != null) {
 
-    @Override
-    public void onClick(View v) {
-        //code here
-        if (v == h) {
-        frequency = 148000;
-        sendNewFreq(frequency);
-        updateDisplay();
+                    buffer[0] = 0x01;
+                    buffer[1] = 1;
+                    buffer[2] = 2;
+                    buffer[3] = 3;
+                    buffer[4] = 4;
+                    buffer[5] = (byte) 0xff;
+                    connection.controlTransfer(0x21, 0x9, 0x200, 0, buffer, buffer.length, 100);
+                }
+            }
+
         }
+        return true;
     }
 
     private boolean sendNewFreq(long frequency) {
@@ -256,7 +493,33 @@ public class MainActivity extends Activity implements View.OnClickListener {
         return false;
     }
 
+    private boolean sendNewFreqToDDSEEPROM(long freq) throws Exception {
+        byte[] buffer = new byte[bufferSize];
+        if (buffer != null)
+        {
+            buffer[0] = 0x03;
+            buffer[1] = (byte)((frequency & 0xff000000) >> 24);
+            buffer[2] = (byte)((frequency & 0x00ff0000) >> 16);
+            buffer[3] = (byte)((frequency & 0x0000ff00) >> 8);
+            buffer[4] = (byte)((frequency & 0x000000ff));
+            buffer[5] = (byte) 0xff;
+            connection.controlTransfer(0x21, 0x9, 0x200, 0, buffer, buffer.length, 0);
+            if ((buffer[0] == 0x02) && (buffer[5] == 0x64))
+                return true;
+            else
+                return false;
+        }
+
+        return false;
+    }
+
     private void updateDisplay() {
+    }
+
+    @Override
+    public void onClick(View v) {
+        //code here
+
     }
 
     @Override
@@ -264,6 +527,4 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
         super.onDestroy();
     }
-
-
 }

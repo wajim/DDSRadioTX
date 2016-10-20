@@ -483,9 +483,9 @@ int id buttonPanel 0x7f0d002b
 int id buttonSubtract 0x7f0d006a
 int id buttondroit 0x7f0d005f
 int id buttongauche 0x7f0d0060
-int id buttonmoins 0x7f0d005a
+int id buttonmoins 0x7f0d0059
 int id buttonpgauche 0x7f0d005e
-int id buttonplus 0x7f0d0059
+int id buttonplus 0x7f0d005a
 int id cancel_action 0x7f0d0077
 int id checkbox 0x7f0d0039
 int id chronometer 0x7f0d007d

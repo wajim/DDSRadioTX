@@ -89,13 +89,6 @@
         android:weightSum="1.0">
 
         <Button
-            android:id="@+id/buttonplus"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight=".5"
-            android:text="+" />
-
-        <Button
             android:id="@+id/buttonmoins"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -103,6 +96,15 @@
             android:layout_toRightOf="@+id/buttonplus"
             android:layout_weight=".5"
             android:text="-" />
+
+        <Button
+            android:id="@+id/buttonplus"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".5"
+            android:text="+" />
+
+
     </LinearLayout>
 
     <LinearLayout

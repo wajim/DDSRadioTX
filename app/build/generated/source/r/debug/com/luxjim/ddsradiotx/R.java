@@ -1637,9 +1637,9 @@ containing a value of this type.
         public static final int buttonSubtract=0x7f0d006a;
         public static final int buttondroit=0x7f0d005f;
         public static final int buttongauche=0x7f0d0060;
-        public static final int buttonmoins=0x7f0d005a;
+        public static final int buttonmoins=0x7f0d0059;
         public static final int buttonpgauche=0x7f0d005e;
-        public static final int buttonplus=0x7f0d0059;
+        public static final int buttonplus=0x7f0d005a;
         public static final int cancel_action=0x7f0d0077;
         public static final int checkbox=0x7f0d0039;
         public static final int chronometer=0x7f0d007d;
